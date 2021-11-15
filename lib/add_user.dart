@@ -22,6 +22,7 @@ class _AddUserState extends State<AddUser> {
   UserDataModel model;
   _AddUserState(this.model);
   String text = "";
+  String _selectedGender = 'male';
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +40,45 @@ class _AddUserState extends State<AddUser> {
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTextField(name, "Name"),
                 _buildTextField(email, "Email"),
-                _buildTextField(gender, "Gender"),
+                Text(
+                  "Select Gender",
+                  style: TextStyle(fontSize: 18),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(
+                      children: [
+                        Radio(
+                            value: "male",
+                            groupValue: _selectedGender,
+                            onChanged: (val) {
+                              setState(() {
+                                _selectedGender = val as String;
+                              });
+                            }),
+                        Text("Male"),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Radio(
+                            value: "female",
+                            groupValue: _selectedGender,
+                            onChanged: (val) {
+                              setState(() {
+                                _selectedGender = val as String;
+                              });
+                            }),
+                        Text("Female"),
+                      ],
+                    ),
+                  ],
+                ),
                 _buildTextField(status, "Status"),
                 Container(
                     width: double.infinity,
@@ -87,7 +123,7 @@ class _AddUserState extends State<AddUser> {
       body: {
         "name": name.text,
         "email": email.text,
-        "gender": gender.text,
+        "gender": _selectedGender,
         "status": status.text,
       },
       headers: {
