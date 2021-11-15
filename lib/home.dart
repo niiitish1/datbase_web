@@ -83,8 +83,8 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          UserDataModel userDataModel =
-              UserDataModel("nitish", "nitish6@gmail.com", "male", "inactive");
+          UserDataModel userDataModel = UserDataModel(
+              "nitish", "nitish6@gmail.com", "male", "inactive", 0);
           var res = await Navigator.push(
             context,
             MaterialPageRoute(
@@ -105,7 +105,7 @@ class _HomeState extends State<Home> {
       onTap: () =>
           Navigator.push(context, MaterialPageRoute(builder: (context) {
         UserDataModel model = UserDataModel(userData["name"], userData["email"],
-            userData["gender"], userData["status"]);
+            userData["gender"], userData["status"], userData["id"]);
         return AddUser(model: model);
       })),
       child: Column(
@@ -218,9 +218,10 @@ class _HomeState extends State<Home> {
             "Bearer a39bd94de4d16524d53767585cca09968dee649f244d473750c25e3518e280fe"
       },
     );
-    if (resp.statusCode == 204) {
-      Fluttertoast.showToast(msg: "Deleted");
-    }
+    resp.statusCode == 204
+        ? Fluttertoast.showToast(msg: "Deleted")
+        : Fluttertoast.showToast(msg: "failed");
+
     setState(() {
       isEnable = false;
     });

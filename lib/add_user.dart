@@ -14,6 +14,7 @@ class AddUser extends StatefulWidget {
 }
 
 class _AddUserState extends State<AddUser> {
+  var link = "https://gorest.co.in/public/v1/users";
   TextEditingController name = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController gender = TextEditingController();
@@ -53,18 +54,14 @@ class _AddUserState extends State<AddUser> {
                 Container(
                     width: double.infinity,
                     child: ElevatedButton(
-                        onPressed: () {}, child: Text("Update"))),
-                Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          updateApi();
                         },
-                        child: Text("Back"))),
-                Text(text,
-                    style: TextStyle(
-                      fontSize: 20,
-                    ))
+                        child: Text("Update"))),
+                Text(
+                  text,
+                  style: TextStyle(fontSize: 20),
+                )
               ],
             ),
           ),
@@ -85,11 +82,8 @@ class _AddUserState extends State<AddUser> {
   }
 
   postApi() async {
-    UserDataModel(name.text, email.text, gender.text, status.text);
-    print(model.email);
-    print(email.text + ":- before");
     var resp = await http.post(
-      Uri.parse("https://gorest.co.in/public/v1/users"),
+      Uri.parse(link),
       body: {
         "name": name.text,
         "email": email.text,
@@ -101,21 +95,57 @@ class _AddUserState extends State<AddUser> {
             "Bearer a39bd94de4d16524d53767585cca09968dee649f244d473750c25e3518e280fe"
       },
     );
-    if (resp.statusCode == 201) {
-      setState(() {
-        print(email.text);
-        print(model.email);
-        text = "User Added   ${email.text}";
-        Future.delayed(Duration(milliseconds: 3000), () {
-          Navigator.pop(context, true);
+    print(resp.statusCode);
+    switch (resp.statusCode) {
+      case 201:
+        setState(() {
+          text = "User Added   ${email.text}";
+          Future.delayed(Duration(milliseconds: 3000), () {
+            Navigator.pop(context, true);
+          });
         });
-      });
-    } else {
-      setState(() {
-        print(email.text);
-        print(model.email);
-        text = "error ${resp.statusCode}  ${email.text}";
-      });
+        break;
+      case 422:
+        setState(() {
+          text = "error ${resp.statusCode} please make some change";
+        });
+        break;
+      default:
+        setState(() {
+          text = "error ${resp.statusCode}";
+        });
     }
+  }
+
+  updateApi() async {
+    print(link + "/${model.id}");
+    var resp = await http.patch(
+      Uri.parse(link + "/${model.id}"),
+      body: {
+        "name": name.text,
+        "email": email.text,
+        "gender": gender.text,
+        "status": status.text,
+      },
+      headers: {
+        "Authorization":
+            "Bearer a39bd94de4d16524d53767585cca09968dee649f244d473750c25e3518e280fe"
+      },
+    );
+    switch (resp.statusCode) {
+      case 200:
+        setState(() {
+          text = "User Updated   ${email.text}";
+          Future.delayed(Duration(milliseconds: 3000), () {
+            Navigator.pop(context, true);
+          });
+        });
+        break;
+      default:
+        setState(() {
+          text = "error ${resp.statusCode}";
+        });
+    }
+    print(resp.statusCode);
   }
 }
