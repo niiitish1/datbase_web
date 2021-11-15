@@ -95,13 +95,13 @@ class _AddUserState extends State<AddUser> {
             "Bearer a39bd94de4d16524d53767585cca09968dee649f244d473750c25e3518e280fe"
       },
     );
-    print(resp.statusCode);
+
     switch (resp.statusCode) {
       case 201:
         setState(() {
           text = "User Added   ${email.text}";
           Future.delayed(Duration(milliseconds: 3000), () {
-            Navigator.pop(context, true);
+            Navigator.pop(context, name.text);
           });
         });
         break;
@@ -115,6 +115,7 @@ class _AddUserState extends State<AddUser> {
           text = "error ${resp.statusCode}";
         });
     }
+    print(resp.statusCode);
   }
 
   updateApi() async {
@@ -136,8 +137,8 @@ class _AddUserState extends State<AddUser> {
       case 200:
         setState(() {
           text = "User Updated   ${email.text}";
-          Future.delayed(Duration(milliseconds: 3000), () {
-            Navigator.pop(context, true);
+          Future.delayed(Duration(milliseconds: 2000), () {
+            Navigator.pop(context);
           });
         });
         break;

@@ -22,11 +22,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   var arr = [];
   bool isEnable = false;
+  var link = "https://gorest.co.in/public/v1/users";
+  String newUser = "";
 
   @override
   void initState() {
     super.initState();
-    apiCall(val: false);
+    apiCall("");
   }
 
   @override
@@ -57,7 +59,7 @@ class _HomeState extends State<Home> {
                               isEnable = true;
                             });
                             apiDelete(userData);
-                            apiCall(val: false);
+                            apiCall(newUser);
                           },
                           child: Icon(Icons.delete),
                         ),
@@ -85,14 +87,15 @@ class _HomeState extends State<Home> {
         onPressed: () async {
           UserDataModel userDataModel = UserDataModel(
               "nitish", "nitish6@gmail.com", "male", "inactive", 0);
-          var res = await Navigator.push(
+          var val = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => AddUser(model: userDataModel),
             ),
           );
-          if (res == true) {
-            apiCall(val: true);
+          if (val != null) {
+            newUser = "?name=$val";
+            apiCall(newUser);
           }
         },
         child: Icon(Icons.person_add_alt_1),
@@ -194,23 +197,22 @@ class _HomeState extends State<Home> {
     );
   }
 
-  apiCall({bool? val}) async {
-    var link = "https://gorest.co.in/public/v1/users";
-    if (val == true) {
-      link = "https://gorest.co.in/public/v1/users?email=nitish";
-    }
+  apiCall(String extra) async {
     var recp = await http.get(
-      Uri.parse(link),
+      Uri.parse("${link + extra}"),
     );
     var jsonResp = jsonDecode(recp.body);
     setState(() {
       arr = jsonResp['data'];
     });
+    if (arr.isEmpty) {
+      setState(() {
+        newUser = "";
+      });
+    }
   }
 
   apiDelete(var userData) async {
-    var link = "https://gorest.co.in/public/v1/users";
-    print(link + "/${userData["id"]}");
     var resp = await http.delete(
       Uri.parse(link + "/${userData["id"]}"),
       headers: {
