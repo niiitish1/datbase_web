@@ -106,7 +106,7 @@ class _AddUserState extends State<AddUser> {
         print(email.text);
         print(model.email);
         text = "User Added   ${email.text}";
-        Future.delayed(Duration(milliseconds: 6000), () {
+        Future.delayed(Duration(milliseconds: 3000), () {
           Navigator.pop(context, true);
         });
       });

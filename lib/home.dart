@@ -21,11 +21,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var arr = [];
+  bool isEnable = false;
 
   @override
   void initState() {
     super.initState();
-    apiCall();
+    apiCall(val: false);
   }
 
   @override
@@ -35,29 +36,49 @@ class _HomeState extends State<Home> {
         title: Text("MyApp"),
       ),
       body: SafeArea(
-        child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          itemBuilder: (context, indexNo) {
-            var userData = arr[indexNo];
-            return Padding(
-              padding: EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 7,
-                    child: _showUserData(userData),
+        child: Stack(
+          children: [
+            ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemBuilder: (context, indexNo) {
+                var userData = arr[indexNo];
+                return Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 7,
+                        child: _showUserData(userData),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isEnable = true;
+                            });
+                            apiDelete(userData);
+                            apiCall(val: false);
+                          },
+                          child: Icon(Icons.delete),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      )
+                    ],
                   ),
-                  Expanded(
-                    child: Icon(Icons.delete),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  )
-                ],
-              ),
-            );
-          },
-          itemCount: arr.length,
+                );
+              },
+              itemCount: arr.length,
+            ),
+            if (isEnable) ...[
+              Center(
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
+                ),
+              )
+            ]
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -184,6 +205,24 @@ class _HomeState extends State<Home> {
     var jsonResp = jsonDecode(recp.body);
     setState(() {
       arr = jsonResp['data'];
+    });
+  }
+
+  apiDelete(var userData) async {
+    var link = "https://gorest.co.in/public/v1/users";
+    print(link + "/${userData["id"]}");
+    var resp = await http.delete(
+      Uri.parse(link + "/${userData["id"]}"),
+      headers: {
+        "Authorization":
+            "Bearer a39bd94de4d16524d53767585cca09968dee649f244d473750c25e3518e280fe"
+      },
+    );
+    if (resp.statusCode == 204) {
+      Fluttertoast.showToast(msg: "Deleted");
+    }
+    setState(() {
+      isEnable = false;
     });
   }
 }
