@@ -56,17 +56,15 @@ class _HomeState extends State<Home> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
+                              arr.remove(indexNo);
                               isEnable = true;
                             });
                             apiDelete(userData);
-                            apiCall(newUser);
                           },
                           child: Icon(Icons.delete),
                         ),
                       ),
-                      SizedBox(
-                        height: 5,
-                      )
+                      SizedBox(height: 5)
                     ],
                   ),
                 );
@@ -205,11 +203,6 @@ class _HomeState extends State<Home> {
     setState(() {
       arr = jsonResp['data'];
     });
-    if (arr.isEmpty) {
-      setState(() {
-        newUser = "";
-      });
-    }
   }
 
   apiDelete(var userData) async {
@@ -227,5 +220,11 @@ class _HomeState extends State<Home> {
     setState(() {
       isEnable = false;
     });
+
+    print("checking....:${arr.length}");
+    if (arr.length <= 1) {
+      newUser = "";
+    }
+    apiCall(newUser);
   }
 }
