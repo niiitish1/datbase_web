@@ -23,7 +23,8 @@ class _AddUserState extends State<AddUser> {
   _AddUserState(this.model);
   String text = "";
   String _selectedGender = 'male';
-
+  String _isActive = "inactive";
+  bool _isEnabled = false;
   @override
   Widget build(BuildContext context) {
     name.text = model.name;
@@ -44,10 +45,7 @@ class _AddUserState extends State<AddUser> {
               children: [
                 _buildTextField(name, "Name"),
                 _buildTextField(email, "Email"),
-                Text(
-                  "Select Gender",
-                  style: TextStyle(fontSize: 18),
-                ),
+                Text("Select Gender", style: TextStyle(fontSize: 18)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -79,7 +77,22 @@ class _AddUserState extends State<AddUser> {
                     ),
                   ],
                 ),
-                _buildTextField(status, "Status"),
+                Text("Status", style: TextStyle(fontSize: 18)),
+                Row(
+                  children: [
+                    Switch(
+                        value: _isEnabled,
+                        onChanged: (val) {
+                          setState(() {
+                            _isEnabled = val;
+                            _isEnabled
+                                ? _isActive = "active"
+                                : _isActive = "inactive";
+                          });
+                        }),
+                    Text(_isActive)
+                  ],
+                ),
                 Container(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -124,7 +137,7 @@ class _AddUserState extends State<AddUser> {
         "name": name.text,
         "email": email.text,
         "gender": _selectedGender,
-        "status": status.text,
+        "status": _isActive,
       },
       headers: {
         "Authorization":

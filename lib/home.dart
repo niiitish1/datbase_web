@@ -84,7 +84,7 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           UserDataModel userDataModel = UserDataModel(
-              "nitish", "nitish6@gmail.com", "male", "inactive", 0);
+              "nitish", "nitish1@gmail.com", "male", "inactive", 0);
           var val = await Navigator.push(
             context,
             MaterialPageRoute(
