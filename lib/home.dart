@@ -79,23 +79,7 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          UserDataModel userDataModel = UserDataModel(
-              "nitish", "nitish1@gmail.com", "male", "inactive", 0);
-          var val = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddUser(model: userDataModel),
-            ),
-          );
-          if (val != null) {
-            newUser = "?name=$val";
-            apiCall(newUser);
-          }
-        },
-        child: Icon(Icons.person_add_alt_1),
-      ),
+      floatingActionButton: _buildFloatinfActionButton(),
     );
   }
 
@@ -218,6 +202,26 @@ class _HomeState extends State<Home> {
           ],
         ),
       ],
+    );
+  }
+
+  FloatingActionButton _buildFloatinfActionButton() {
+    return FloatingActionButton(
+      onPressed: () async {
+        UserDataModel userDataModel =
+            UserDataModel("nitish", "nitish1@gmail.com", "male", "inactive", 0);
+        var val = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddUser(model: userDataModel),
+          ),
+        );
+        if (val != null) {
+          newUser = "?name=$val";
+          apiCall(newUser);
+        }
+      },
+      child: Icon(Icons.person_add_alt_1),
     );
   }
 
