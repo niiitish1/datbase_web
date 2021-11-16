@@ -9,7 +9,6 @@ class AddUser extends StatefulWidget {
   AddUser({Key? key, required this.model}) : super(key: key);
 
   @override
-  // ignore: no_logic_in_create_state
   _AddUserState createState() => _AddUserState(model);
 }
 
@@ -17,8 +16,6 @@ class _AddUserState extends State<AddUser> {
   var link = "https://gorest.co.in/public/v1/users";
   TextEditingController name = TextEditingController();
   TextEditingController email = TextEditingController();
-  TextEditingController gender = TextEditingController();
-  TextEditingController status = TextEditingController();
   UserDataModel model;
   _AddUserState(this.model);
   String text = "";
@@ -29,88 +26,18 @@ class _AddUserState extends State<AddUser> {
   Widget build(BuildContext context) {
     name.text = model.name;
     email.text = model.email;
-    gender.text = model.gender;
-    status.text = model.status;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("User Detail"),
-        centerTitle: true,
-      ),
+      appBar: _buildAppBar(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTextField(name, "Name"),
                 _buildTextField(email, "Email"),
-                Text("Select Gender", style: TextStyle(fontSize: 18)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Row(
-                      children: [
-                        Radio(
-                            value: "male",
-                            groupValue: _selectedGender,
-                            onChanged: (val) {
-                              setState(() {
-                                _selectedGender = val as String;
-                              });
-                            }),
-                        Text("Male"),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Radio(
-                            value: "female",
-                            groupValue: _selectedGender,
-                            onChanged: (val) {
-                              setState(() {
-                                _selectedGender = val as String;
-                              });
-                            }),
-                        Text("Female"),
-                      ],
-                    ),
-                  ],
-                ),
-                Text("Status", style: TextStyle(fontSize: 18)),
-                Row(
-                  children: [
-                    Switch(
-                        value: _isEnabled,
-                        onChanged: (val) {
-                          setState(() {
-                            _isEnabled = val;
-                            _isEnabled
-                                ? _isActive = "active"
-                                : _isActive = "inactive";
-                          });
-                        }),
-                    Text(_isActive)
-                  ],
-                ),
-                Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          postApi();
-                        },
-                        child: Text("Add User"))),
-                Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          updateApi();
-                        },
-                        child: Text("Update"))),
-                Text(
-                  text,
-                  style: TextStyle(fontSize: 20),
-                )
+                _build_gender_status(),
+                _buildButton(),
               ],
             ),
           ),
@@ -119,7 +46,68 @@ class _AddUserState extends State<AddUser> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint) {
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text("User Detail"),
+      centerTitle: true,
+    );
+  }
+
+  Column _build_gender_status() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Select Gender", style: TextStyle(fontSize: 18)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              children: [
+                Radio(
+                    value: "male",
+                    groupValue: _selectedGender,
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedGender = val as String;
+                      });
+                    }),
+                Text("Male"),
+              ],
+            ),
+            Row(
+              children: [
+                Radio(
+                    value: "female",
+                    groupValue: _selectedGender,
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedGender = val as String;
+                      });
+                    }),
+                Text("Female"),
+              ],
+            ),
+          ],
+        ),
+        Text("Status", style: TextStyle(fontSize: 18)),
+        Row(
+          children: [
+            Switch(
+                value: _isEnabled,
+                onChanged: (val) {
+                  setState(() {
+                    _isEnabled = val;
+                    _isEnabled ? _isActive = "active" : _isActive = "inactive";
+                  });
+                }),
+            Text(_isActive)
+          ],
+        ),
+      ],
+    );
+  }
+
+  Padding _buildTextField(TextEditingController controller, String hint) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextField(
@@ -174,8 +162,8 @@ class _AddUserState extends State<AddUser> {
       body: {
         "name": name.text,
         "email": email.text,
-        "gender": gender.text,
-        "status": status.text,
+        "gender": _selectedGender,
+        "status": _isActive,
       },
       headers: {
         "Authorization":
@@ -197,5 +185,31 @@ class _AddUserState extends State<AddUser> {
         });
     }
     print(resp.statusCode);
+  }
+
+  Column _buildButton() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+            width: double.infinity,
+            child: ElevatedButton(
+                onPressed: () {
+                  postApi();
+                },
+                child: Text("Add User"))),
+        Container(
+            width: double.infinity,
+            child: ElevatedButton(
+                onPressed: () {
+                  updateApi();
+                },
+                child: Text("Update"))),
+        Text(
+          text,
+          style: TextStyle(fontSize: 20),
+        )
+      ],
+    );
   }
 }
