@@ -34,9 +34,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("MyApp"),
-      ),
+      appBar: _buildAppBar(),
       body: SafeArea(
         child: Stack(
           children: [
@@ -195,13 +193,65 @@ class _HomeState extends State<Home> {
     );
   }
 
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text("MyApp"),
+      actions: [
+        PopupMenuButton(
+          icon: Icon(Icons.more_vert),
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              child: Row(
+                children: const [
+                  Text("Sort by"),
+                  Icon(Icons.arrow_drop_down_circle_rounded,
+                      color: Colors.black),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              child: Text("by ID"),
+              onTap: () async {
+                await sortArray();
+              },
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
   apiCall(String extra) async {
+    String jointLink = link + extra;
     var recp = await http.get(
-      Uri.parse("${link + extra}"),
+      Uri.parse(jointLink),
     );
     var jsonResp = jsonDecode(recp.body);
     setState(() {
       arr = jsonResp['data'];
+    });
+  }
+
+  sortArray() {
+    var sortedArray = [];
+    var tempArray = [];
+    sortedArray.addAll(arr);
+    for (int i = 0; i < sortedArray.length; i++) {
+      for (int j = i + 1; j < sortedArray.length; j++) {
+        if (sortedArray[i]["id"] > sortedArray[j]["id"]) {
+          tempArray.add(sortedArray[i]);
+          sortedArray[i] = sortedArray[j];
+          sortedArray[j] = tempArray[0];
+          tempArray.clear();
+        }
+      }
+    }
+    for (int i = 0; i < sortedArray.length; i++) {
+      print(sortedArray[i]["id"]);
+    }
+    arr.clear();
+    setState(() {
+      arr.addAll(sortedArray);
     });
   }
 
